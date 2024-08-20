@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 
 st.title('🤖 Machine Learning App')
 
@@ -59,6 +61,8 @@ with st.expander('Input Features'):
 # Ecode X
 econde = ['island', 'gender']
 df_penguins = pd.get_dummies(input_penguins, prefix=econde)
+
+X = df_penguins[1:]
 input_row = df_penguins[:1]
 
 # Econde y
@@ -81,3 +85,28 @@ with st.expander('Data preparation'):
     with right_column:
         st.write('No enconde')    
         y_raw
+
+
+
+## Model training and inference
+# Train the ML model
+clf = RandomForestClassifier()
+clf.fit(X, y)
+
+
+## Apply model to make predictions
+prediction = clf.predict(input_row)
+prediction_proba = clf.predict_proba(input_row)
+
+df_prediction_proba = pd.DataFrame(prediction_proba)
+df_prediction_proba.columns = ['Adelie', 'Chinstrap', 'Gentoo']
+df_prediction_proba.rename(columns={0:'Adelie',
+                                    1:'Chinstrap',
+                                    2:'Gentoo'})
+# df_prediction_proba
+
+# Display predicted species
+st.subheader('Predicted Species')
+penguins_species = np.array(['Adelie','Chinstrap','Gentoo'])
+st.success(str(penguins_species[prediction][0]))
+
